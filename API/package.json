@@ -1,0 +1,17 @@
+{
+  "name": "noche-api",
+  "version": "1.0.0",
+  "description": "Backend API for school management system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "API",
+    "REST",
+    "express",
+    "node"
+  ],
+  "author": "Alan Espinosa",
+  "license": "ISC"
+}
