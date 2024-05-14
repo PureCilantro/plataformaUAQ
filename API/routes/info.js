@@ -10,6 +10,13 @@ info.get('/:id([0-9]{6})', (req, res, next) => { // gets all personal info for a
     return res.status(200).json({ code: 200, message: result});
 });
 
+info.get('/calif/', (req, res, next) => { // gets all grades of active subjects for a given user id
+    const consult = DB.prepare(`select s.name, g.sub_grade1, g.sub_grade2, g.sub_grade3, g.final_grade from grades g inner join subjects s on g.subjectID = s.subjectID where userID = ? and status = 'CU';`);
+    const result = consult.all(req.params.id);
+
+    return res.status(200).json({ code: 200, message: result});
+});
+
 info.get('/calif/:id([0-9]{6})', (req, res, next) => { // gets all grades for a given user id
     const consult = DB.prepare('select s.name, g.sub_grade1, g.sub_grade2, g.sub_grade3, g.final_grade from grades g inner join subjects s on g.subjectID = s.subjectID where userID = ?;');
     const result = consult.all(req.params.id);

@@ -67,4 +67,20 @@ admin.get('/teacher/:name([A-Za-z]+)', (req, res, next) => { // searches for a t
     }
 });
 
+admin.get('/na', (req, res, next) => { // gets all info of student type users
+    const consult = DB.prepare(`select userID, count(*) count from grades where status = 'NA' group by userID;`);
+    const result = consult.all();
+
+    const update = DB.prepare('update personalInfo set NAs = ? where userID = ?')
+    let changed = 0;
+
+    for (var student of result) {
+        //const result = update.run(student.count, student.userID);
+        //changed += result.changes;
+        console.log (student)
+    }
+
+    return res.status(200).json({ code: 200, message: changed + " registros actualizados"});
+});
+
 module.exports = admin;
