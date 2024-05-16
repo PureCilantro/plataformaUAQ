@@ -11,21 +11,21 @@ info.get('/:id([0-9]{6})', (req, res, next) => { // gets all personal info for a
 });
 
 info.get('/calif/', (req, res, next) => { // gets all grades of active subjects for a given user id
-    const consult = DB.prepare(`select s.name, g.sub_grade1, g.sub_grade2, g.sub_grade3, g.final_grade from grades g inner join subjects s on g.subjectID = s.subjectID where userID = ? and status = 'CU';`);
-    const result = consult.all(req.params.id);
+    const consult = DB.prepare(`select g.subjectID, s.name, g.sub_grade1 sub1, g.sub_grade2 sub2, g.sub_grade3 sub3, g.final_grade final from grades g inner join subjects s on g.subjectID = s.subjectID where userID = ? and status = 'CU';`);
+    const result = consult.all(req.headers.user);
 
     return res.status(200).json({ code: 200, message: result});
 });
 
 info.get('/calif/:id([0-9]{6})', (req, res, next) => { // gets all grades for a given user id
-    const consult = DB.prepare('select s.name, g.sub_grade1, g.sub_grade2, g.sub_grade3, g.final_grade from grades g inner join subjects s on g.subjectID = s.subjectID where userID = ?;');
+    const consult = DB.prepare('select g.subjectID, s.name, g.sub_grade1, g.sub_grade2, g.sub_grade3, g.final_grade from grades g inner join subjects s on g.subjectID = s.subjectID where userID = ?;');
     const result = consult.all(req.params.id);
 
     return res.status(200).json({ code: 200, message: result});
 });
 
 info.get('/calif/:id([0-9]{6})/:subid([0-9])', (req, res, next) => { // gets all grades for a given student and subject id
-    const consult = DB.prepare('select g.sub_grade1, g.sub_grade2, g.sub_grade3, g.final_grade from grades g inner join subjects s on g.subjectID = s.subjectID where userID = ? and g.subjectID = ?;');
+    const consult = DB.prepare('select g.sub_grade1 sub1, g.sub_grade2 sub2, g.sub_grade3 sub3, g.final_grade final from grades g inner join subjects s on g.subjectID = s.subjectID where userID = ? and g.subjectID = ?;');
     const result = consult.all(req.params.id, req.params.subid);
 
     return res.status(200).json({ code: 200, message: result});
