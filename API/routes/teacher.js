@@ -4,7 +4,7 @@ const teacher = express.Router();
 const DB = require('../config/database');
 
 teacher.get('/', (req, res, next) => { // gets all groups for a given teacher id
-    const consult = DB.prepare('select sc.grupo, su.name, h.hours, sc.croom from schedules sc inner join subjects su on sc.subjectID = su.subjectID inner join hourBlocks h on sc.hourBlockID = h.hourBlockID where teacherID = ? group by grupo');
+    const consult = DB.prepare('select sc.subjectID, sc.grupo, su.name, h.hours, sc.croom from schedules sc inner join subjects su on sc.subjectID = su.subjectID inner join hourBlocks h on sc.hourBlockID = h.hourBlockID where teacherID = ? group by grupo');
     const result = consult.all(req.headers.user);
 
     return res.status(200).json({ code: 200, message: result});
@@ -13,6 +13,13 @@ teacher.get('/', (req, res, next) => { // gets all groups for a given teacher id
 teacher.get('/:group([0-9]{1,2})', (req, res, next) => { // gets all students for a given group number
     const consult = DB.prepare('select s.userID, p.name from schedules s inner join personalInfo p on s.userID = p.userID where grupo = ?;');
     const result = consult.all(req.params.group);
+
+    return res.status(200).json({ code: 200, message: result});
+});
+
+teacher.get('/horario/:id([0-9]{6})', (req, res, next) => { // gets all schedule information for a given teacher id
+    const consult = DB.prepare('select sch.grupo, sub.name, h.hours, sch.days, sch.croom from schedules sch inner join subjects sub on sch.subjectID = sub.subjectID inner join hourBlocks h on sch.hourBlockID = h.hourBlockID where teacherID = ? group by grupo;');
+    const result = consult.all(req.params.id);
 
     return res.status(200).json({ code: 200, message: result});
 });

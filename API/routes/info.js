@@ -3,9 +3,9 @@ const express = require('express');
 const info = express.Router();
 const DB = require('../config/database');
 
-info.get('/:id([0-9]{6})', (req, res, next) => { // gets all personal info for a given user id
+info.get('/', (req, res, next) => { // gets all personal info for a given user id
     const consult = DB.prepare('select name,semester,credits from personalInfo where userID = ?');
-    const result = consult.all(req.params.id);
+    const result = consult.all(req.headers.user);
 
     return res.status(200).json({ code: 200, message: result});
 });
@@ -32,7 +32,7 @@ info.get('/calif/:id([0-9]{6})/:subid([0-9])', (req, res, next) => { // gets all
 });
 
 info.get('/horario/:id([0-9]{6})', (req, res, next) => { // gets all schedule information for a given student id
-    const consult = DB.prepare('select sub.name, h.hours from schedules sch inner join subjects sub on sch.subjectID = sub.subjectID inner join hourBlocks h on sch.hourBlockID = h.hourBlockID where userID = ?;');
+    const consult = DB.prepare('select sub.name, h.hours, sch.days from schedules sch inner join subjects sub on sch.subjectID = sub.subjectID inner join hourBlocks h on sch.hourBlockID = h.hourBlockID where userID = ?;');
     const result = consult.all(req.params.id);
 
     return res.status(200).json({ code: 200, message: result});

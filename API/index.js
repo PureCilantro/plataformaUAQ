@@ -11,6 +11,7 @@ const admin = require('./routes/admin');
 //Middleware
 const authLevel2 = require('./middleware/authLevel2');
 const authLevel1 = require('./middleware/authLevel1');
+const notFound = require('./middleware/notFound');
 
 app.use(cors());
 app.use(morgan('dev'));
@@ -29,6 +30,8 @@ app.use('/teacher', teacher);
 app.use(authLevel1);
 
 app.use('/admin', admin);
+
+app.use(notFound)
 
 // Server status
 app.listen(process.env.PORT || 3000, () => {
