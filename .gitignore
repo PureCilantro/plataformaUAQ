@@ -1,2 +1,4 @@
 node_modules
 ProyectoFinalExpress
+API/database/db.sqlite-shm
+API/database/db.sqlite-wal

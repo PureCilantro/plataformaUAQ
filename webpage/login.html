@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jaldi:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="centerDiv">
+        <div id="titleBx">
+            <img class="escudo" src="images\logo.png" alt>
+            <div id="title">
+                <h1>Portal UAQ</h1>
+            </div>
+            <img class="escudo" src="images\logo.png" alt>
+        </div>
+    </div>
+
+    <div class="centerDiv">
+        <div id="inputContainer">
+            <input class="input" id="expediente" type="text" placeholder="Expediente">
+            <input class="input" id="clave" type="password" placeholder="Password">
+            <button class="button" id="ingresarBtn" onclick="Ingresar()">Ingresar</button>
+        </div>
+    </div>
+    <div class="centerDiv">
+        <div id="errorBox">
+            <p id="error"></p>
+        </div>
+    </div>
+    <script>
+        function Ingresar() {
+            username = document.getElementById('expediente').value
+            password = document.getElementById('clave').value
+            fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_name: username, user_password: password }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    document.getElementById('error').innerHTML = ''
+                    console.log(data);
+                    let user_level = data.message[0].user_level
+                    switch (user_level) {
+                        case 1:
+                            console.log('case 1')
+                            window.location.href = `dashBoard-admin.html?userID=${username}`;
+                            break
+                        case 2:
+                            console.log('case 2')
+                            window.location.href = `dashboard-docente.html?userID=${username}`;
+                            break
+                        case 3:
+                            console.log('case 3')
+                            window.location.href = `dashBoard-student.html?userID=${username}`;
+                            break
+                    }
+                    if (user_level != 1 && user_level != 2 && user_level != 3) {
+
+                        document.getElementById('error').appendChild(document.createTextNode(data.message));
+                    }
+
+
+
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    document.getElementById('error').appendChild(document.createTextNode(error))
+                });
+        }
+    </script>
+</body>
+
+</html>
