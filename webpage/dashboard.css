@@ -1,0 +1,121 @@
+/*Generalities*/
+* {
+  justify-content: center;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  font-family: "Jaldi", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+#body {
+  justify-content: start;
+  display: flex;
+}
+
+/*SidePanel*/
+.logo {
+  padding: 1ch;
+  width: 8ch;
+}
+#logo-box {
+  justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+}
+#sidepanel {
+  display: flex;
+  border-radius: 1ch;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: start;
+}
+#sidepanel-headers {
+  font-size: large;
+  text-align: center;
+  display: block;
+  width: 35ch;
+  padding: 5ch;
+  background-color: white;
+}
+#sidepanel-content {
+  display: flex;
+  flex-direction: column;
+  padding: 3ch;
+  background-color: #023b90;
+  flex-grow: 1;
+}
+.button {
+  margin: 3ch;
+  font-size: large;
+  border-radius: 0.5ch;
+}
+.button:hover {
+  background-color: #04aa6d;
+  color: white;
+}
+.button:active {
+  background-color: #04aa6d;
+  box-shadow: 0 0.5ch #666;
+  transform: translateY(0.2ch);
+}
+
+/*Requested-Content*/
+#content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  flex-grow: 1;
+}
+#user-data,
+#schedule,
+#grades {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #023b90;
+  height: 80ch;
+  width: 100ch;
+  border-radius: 1ch;
+  margin: 2ch;
+}
+#schedule {
+  display: None;
+}
+#grades {
+  display: None;
+  overflow: auto;
+}
+#user-info {
+  font-size: 5ch;
+  color: white;
+  border-radius: 0.5ch;
+}
+.img {
+  border-radius: 0.5ch;
+}
+
+/*Schedule*/
+#timetable {
+  width: 100%;
+  height: 100%;
+}
+.cell {
+  border-radius: 1ch;
+  padding: 0.5ch;
+  width: calc(100% / 6);
+  height: calc(100% / 12);
+  background-color: white;
+}
+.day-cell,
+.header-cell {
+  background-color: #023b90;
+  color: white;
+}
+.hour-cell {
+  text-align: center;
+  background-color: #023b90;
+  color: white;
+}

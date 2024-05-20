@@ -1,18 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>UAQ</title>
+    <link rel="stylesheet" href="dashBoard.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jaldi:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body id="body">
-    <p>this is the student dashboard</p>
+    <div id="sidepanel">
+        <div id="sidepanel-headers">
+            <div id="logo-box">
+                <img class="logo" id="logo1" src="images\logo.png">
+                <img class="logo" id="logo2" src="images\logo.png">
+            </div>
+            <h1>Portal UAQ</h1>
+            <h1>Bienvenido</h1>
+            <h2>¿Que desea hacer?</h2>
+        </div>
+
+        <div id="sidepanel-content">
+            <button class="button" id="userInfo-btn" onclick="show_info()">Consultar Datos
+                personales</button>
+            <button class="button" id="schedule-btn" onclick="show_schedule()">Consultar
+                Horario</button>
+            <button class="button" id="grades-btn" onclick="show_grades()">Consultar
+                calificaciones</button>
+            <button class="button" id="logout-btn" onclick="window.location.href = 'login.html'">Cerrar Sesion
+            </button>
+
+        </div>
+
+    </div>
+
+    <div id="content">
+        <div id="view-container">
+
+            <div id="user-data" class="view">
+                <div id="user-img"></div>
+                <div id="user-info"></div>
+            </div>
+
+            <div id="schedule" class="view">
+                <table id="timetable">
+                    <tr>
+                        <th class="day-cell cell">Hora</th>
+                        <th class="day-cell cell">Lunes</th>
+                        <th class="day-cell cell">Martes</th>
+                        <th class="day-cell cell">Miércoles</th>
+                        <th class="day-cell cell">Jueves</th>
+                        <th class="day-cell cell">Viernes</th>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="grades" class="view">
+            </div>
+
+        </div>
+
+    </div>
     <script>
-        console.log(Headers.values())
+        //Elements that construct the website
+        const user_data = document.getElementById('user-data');
+        const schedule = document.getElementById('schedule');
+        const grades = document.getElementById('grades')
+        //Functions that build the website
+        function show_info() {
+            user_data.style.display = "flex";
+            schedule.style.display = "None";
+            grades.style.display = "None";
+        }
+        function show_schedule() {
+            user_data.style.display = "None";
+            schedule.style.display = "flex";
+            grades.style.display = "None";
+        }
+        function show_grades() {
+            user_data.style.display = "None";
+            schedule.style.display = "None";
+            grades.style.display = "inline-block";
+        }
+
+        function fill_user_data(userData) {
+            const imgContainer = document.getElementById('user-img');
+            const userInfo = document.getElementById('user-info');
+            userInfo.innerHTML = `
+            <p><strong>Nombre:</strong> ${userData.name}</p>
+            <p><strong>Expediente:</strong> ${userID}</p>
+            <p><strong>Semestre Actual:</strong> ${userData.semester}</p>
+            <p><strong>Créditos Obtenidos:</strong> ${userData.credits}/441</p>
+        `;
+        }
+        function fill_schedule(scheduleData) {
+            const timetable = document.getElementById('timetable');
+
+            for (let i = 7; i <= 17; i++) {
+                const row = timetable.insertRow();
+                const hourCell = row.insertCell();
+                hourCell.textContent = `${i}:00`;
+                hourCell.classList.add('hour-cell', 'cell');
+
+                for (let j = 0; j < 5; j++) {
+                    const dayCell = row.insertCell();
+                    dayCell.textContent = '-';
+                    dayCell.classList.add('cell');
+                }
+            }
+
+            scheduleData.forEach(materia => {
+                const [startHour, endHour] = materia.hours.split(' - ').map(time => parseInt(time));
+                const days = materia.days;
+
+                for (let day of days) {
+                    const dayIndex = getDayIndex(day);
+                    if (dayIndex >= 0) {
+                        for (let hour = startHour; hour < endHour; hour++) {
+                            const rowIndex = hour - 6;
+                            const cell = timetable.rows[rowIndex].cells[dayIndex + 1];
+                            cell.textContent = materia.name;
+                            cell.classList.add('filled-cell');
+                        }
+                    }
+                }
+            });
+        }
+        function getDayIndex(day) {
+            switch (day) {
+                case 'L': return 0; // Lunes
+                case 'M': return 1; // Martes
+                case 'W': return 2; // Miércoles
+                case 'J': return 3; // Jueves
+                case 'V': return 4; // Viernes
+                default: return -1;
+            }
+        }
+        function fill_grades(userData) {
+            const gradesContainer = document.getElementById('grades');
+        
+            const table = document.createElement('table');
+            table.classList.add('grades-table');
+        
+            const headerRow = table.insertRow();
+            const headers = ['Materia', 'Parcial 1', 'Parcial 2', 'Parcial 3', 'Final', 'Asistencias'];
+            headers.forEach(headerText => {
+                const header = document.createElement('th');
+                header.textContent = headerText;
+                header.classList.add('cell');
+                header.classList.add('header-cell');
+                headerRow.appendChild(header);
+            });
+        
+            userData.forEach(materia => {
+                const row = table.insertRow();
+                const subGrade3 = materia.sub_grade3 !== "-" ? materia.sub_grade3 : "N/A";
+                const finalGrade = materia.final_grade !== "-" ? materia.final_grade : "N/A";
+                const rowData = [
+                    materia.name,
+                    materia.sub_grade1 !== "-" ? materia.sub_grade1 : "N/A",
+                    materia.sub_grade2 !== "-" ? materia.sub_grade2 : "N/A",
+                    subGrade3,
+                    finalGrade,
+                    "N/A" // Placeholder for Asistencias as it's not provided in the data
+                ];
+        
+                rowData.forEach(cellData => {
+                    const cell = row.insertCell();
+                    cell.textContent = cellData;
+                    cell.classList.add('cell');
+                });
+            });
+        
+            gradesContainer.innerHTML = '';
+            gradesContainer.appendChild(table);
+        }
+        
+        //Params
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        userID = urlParams.get('userID');
+        //get functions for the student
+        function get_user_data() {
+            return fetch('http://localhost:3000/info', {
+                method: 'GET',
+                headers: {
+                    'user': userID
+                }
+            })
+                .then(response => response.json())
+                .then(data => data.message[0])
+                .catch(error => console.error('Error:', error));
+        }
+        function get_user_schedule() {
+            return fetch(`http://localhost:3000/info/horario/${userID}`, {
+                method: 'GET'
+            })
+                .then(response => response.json())
+                .then(data => data.message)
+                .catch(error => console.error('Error:', error));
+        }
+        function get_all_grades() {
+            return fetch(`http://localhost:3000/info/calif/${userID}`, {
+                method: 'GET'
+            })
+                .then(response => response.json())
+                .then(data => data.message)
+                .catch(error => console.error('Error:', error));
+        }
+
+        //use of get functions To fill the data
+
+        get_user_data().then(data => {
+            fill_user_data(data)
+        });
+        get_user_schedule().then(data => {
+            fill_schedule(data)
+        });
+        get_all_grades().then(data =>{
+            fill_grades(data)
+        })
+
+
     </script>
 </body>
 

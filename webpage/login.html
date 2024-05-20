@@ -53,7 +53,7 @@
                     switch (user_level) {
                         case 1:
                             console.log('case 1')
-                            window.location.href = `dashBoard-admin.html?userID=${username}`;
+                            window.location.href = `dashBoard-admin.html?&userID=${username}`;
                             break
                         case 2:
                             console.log('case 2')
@@ -61,7 +61,7 @@
                             break
                         case 3:
                             console.log('case 3')
-                            window.location.href = `dashBoard-student.html?userID=${username}`;
+                            window.location.href = `dashBoard-student.html?&userID=${username}`;
                             break
                     }
                     if (user_level != 1 && user_level != 2 && user_level != 3) {
