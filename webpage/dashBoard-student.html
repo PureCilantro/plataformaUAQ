@@ -29,7 +29,7 @@
             <button class="button" id="schedule-btn" onclick="show_schedule()">Consultar
                 Horario</button>
             <button class="button" id="grades-btn" onclick="show_grades()">Consultar
-                calificaciones</button>
+                Calificaciones</button>
             <button class="button" id="logout-btn" onclick="window.location.href = 'login.html'">Cerrar Sesion
             </button>
 
@@ -69,21 +69,37 @@
         const user_data = document.getElementById('user-data');
         const schedule = document.getElementById('schedule');
         const grades = document.getElementById('grades')
+
         //Functions that build the website
         function show_info() {
             user_data.style.display = "flex";
             schedule.style.display = "None";
             grades.style.display = "None";
+
+            get_user_data().then(data => {
+                fill_user_data(data)
+            });
+
         }
         function show_schedule() {
             user_data.style.display = "None";
             schedule.style.display = "flex";
             grades.style.display = "None";
+
+            get_user_schedule().then(data => {
+                fill_schedule(data)
+            });
+
         }
         function show_grades() {
             user_data.style.display = "None";
             schedule.style.display = "None";
             grades.style.display = "inline-block";
+
+            get_all_grades().then(data => {
+                fill_grades(data)
+            })
+
         }
 
         function fill_user_data(userData) {
@@ -98,6 +114,7 @@
         }
         function fill_schedule(scheduleData) {
             const timetable = document.getElementById('timetable');
+            timetable.innerHTML = ''
 
             for (let i = 7; i <= 17; i++) {
                 const row = timetable.insertRow();
@@ -141,10 +158,10 @@
         }
         function fill_grades(userData) {
             const gradesContainer = document.getElementById('grades');
-        
+
             const table = document.createElement('table');
             table.classList.add('grades-table');
-        
+
             const headerRow = table.insertRow();
             const headers = ['Materia', 'Parcial 1', 'Parcial 2', 'Parcial 3', 'Final', 'Asistencias'];
             headers.forEach(headerText => {
@@ -154,7 +171,7 @@
                 header.classList.add('header-cell');
                 headerRow.appendChild(header);
             });
-        
+
             userData.forEach(materia => {
                 const row = table.insertRow();
                 const subGrade3 = materia.sub_grade3 !== "-" ? materia.sub_grade3 : "N/A";
@@ -167,18 +184,18 @@
                     finalGrade,
                     "N/A" // Placeholder for Asistencias as it's not provided in the data
                 ];
-        
+
                 rowData.forEach(cellData => {
                     const cell = row.insertCell();
                     cell.textContent = cellData;
                     cell.classList.add('cell');
                 });
             });
-        
+
             gradesContainer.innerHTML = '';
             gradesContainer.appendChild(table);
         }
-        
+
         //Params
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
@@ -211,18 +228,12 @@
                 .then(data => data.message)
                 .catch(error => console.error('Error:', error));
         }
-
-        //use of get functions To fill the data
-
         get_user_data().then(data => {
             fill_user_data(data)
         });
-        get_user_schedule().then(data => {
-            fill_schedule(data)
-        });
-        get_all_grades().then(data =>{
-            fill_grades(data)
-        })
+
+
+
 
 
     </script>
