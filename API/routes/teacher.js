@@ -4,7 +4,7 @@ const teacher = express.Router();
 const DB = require('../config/database');
 
 teacher.get('/', (req, res, next) => { // gets all groups for a given teacher id
-    const consult = DB.prepare('select sc.subjectID, sc.grupo, su.name, h.hours, sc.croom from schedules sc inner join subjects su on sc.subjectID = su.subjectID inner join hourBlocks h on sc.hourBlockID = h.hourBlockID where teacherID = ? group by grupo');
+    const consult = DB.prepare('select sc.subjectID, sc.grupo, su.name, h.hours, sc.days, sc.croom from schedules sc inner join subjects su on sc.subjectID = su.subjectID inner join hourBlocks h on sc.hourBlockID = h.hourBlockID where teacherID = ? group by grupo');
     const result = consult.all(req.headers.user);
 
     return res.status(200).json({ code: 200, message: result});

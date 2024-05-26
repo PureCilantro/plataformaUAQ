@@ -86,4 +86,25 @@ admin.post('/na', (req, res, next) => { // gets all info of student type users
     return res.status(200).json({ code: 200, message: changed + " registros actualizados"});
 });
 
+admin.post('/group', (req, res, next) => { // updates grades for a given student id
+    const { sub1, sub2, sub3, final, exp, subject } = req.body;
+
+    if (sub1 && sub2 && sub3 && final && exp && subject) {
+        try {
+            const consult = DB.prepare('');
+            const result = consult.run(sub1, sub2, sub3, final, exp, subject);
+
+            if (result.changes > 0) {
+                return res.status(200).json({ code: 200, message: "El registro ha sido actualizado"});
+            } else {
+                return res.status(200).json({ code: 200, message: "No se actualizo ningun registro"});
+            }
+        } catch (error) {
+            return res.status(400).json({ code: 400, message: "No se pudo actualizar el registro: " + error.message});
+        }
+    } else {
+        return res.status(500).json({ code: 500, message: "Campos incompletos"});    
+    } 
+});
+
 module.exports = admin;
