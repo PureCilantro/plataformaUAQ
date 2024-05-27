@@ -43,12 +43,6 @@
                 <div id="user-img"></div>
                 <div id="user-info"></div>
             </div>
-            <div id="group-manager" class="view">
-                <div>
-
-                </div>
-
-            </div>
 
             <div id="schedule" class="view">
                 <table id="timetable">
@@ -62,8 +56,40 @@
                     </tr>
                 </table>
             </div>
-
+            <div id="group-manager" class="view">
+                <div id="subject-headers">
+                    <div id="subject-group" class="subject-header">
+                        <p></p>
+                    </div>
+                    <div id="subject-name" class="subject-header">
+                        <p></p>
+                    </div>
+                    <div id="subject-hours" class="subject-header">
+                        <p></p>
+                    </div>
+                    <div id="subject-days" class="subject-header">
+                        <p></p>
+                    </div>
+                    <div id="subject-croom" class="subject-header">
+                        <p></p>
+                    </div>
+                </div>
+                <div id="group-students">
+                    <div class="student">
+                        <div class="expediente">
+                            <p></p>
+                        </div>
+                        <div class="name">
+                            <p></p>
+                        </div>
+                        <button class="grades-btn">
+                            Revisar Calificaciones
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div id="grades" class="view">
+
             </div>
 
         </div>
@@ -73,12 +99,17 @@
         //Elements that construct the website
         const user_data = document.getElementById('user-data');
         const schedule = document.getElementById('schedule');
-        const grades = document.getElementById('grades')
+        const group_manager = document.getElementById('group-manager')
+
         //Functions that build the website
+        function show_user_grades() {
+            console.log('hello world')
+        }
+
         function show_info() {
             user_data.style.display = "flex";
             schedule.style.display = "None";
-            grades.style.display = "None";
+            group_manager.style.display = "None";
 
             get_user_data().then(data => {
                 console.log(data)
@@ -90,25 +121,13 @@
         function show_schedule() {
             user_data.style.display = "None";
             schedule.style.display = "flex";
-            grades.style.display = "None";
+            group_manager.style.display = "None";
 
             get_user_schedule().then(data => {
                 console.log(data)
                 fill_schedule(data)
 
             });
-
-        }
-        function show_grades() {
-            user_data.style.display = "None";
-            schedule.style.display = "None";
-            grades.style.display = "inline-block";
-
-            get_all_grades().then(data => {
-                console.log(data)
-                fill_grades(data)
-
-            })
 
         }
 
@@ -120,6 +139,7 @@
             <p><strong>Expediente:</strong> ${userID}</p>
         `;
         }
+
         function fill_schedule(data) {
             const timetable = document.getElementById('timetable');
             timetable.innerHTML = '';
@@ -140,7 +160,8 @@
 
             scheduleData.forEach(subject => {
                 const [startHour, endHour] = subject.hours.split(' - ').map(time => parseInt(time));
-                const days = ['L', 'M', 'W', 'J', 'V'];
+                const days = subject.days;
+
                 for (let day of days) {
                     const dayIndex = getDayIndex(day);
                     if (dayIndex >= 0) {
@@ -153,22 +174,15 @@
                             groupRequest.textContent = `${subject.name}\n${subject.croom}\n${subject.grupo}`;
                             groupRequest.classList.add('filled-cell');
 
-                            // Utilizar una función flecha para pasar el parámetro correctamente
-                            groupRequest.addEventListener('click', () => showGroupView(subject.grupo));
+                            // Utilize an arrow function to pass the parameter correctly
+                            groupRequest.addEventListener('click', () => show_group_view(subject.grupo, subject));
 
                             cell.appendChild(groupRequest);
                         }
                     }
                 }
             });
-
         }
-        function showGroupView(groupID) {
-            get_group_data(groupID).then(data => {
-                console.log(data)
-            });
-        }
-
         function getDayIndex(day) {
             switch (day) {
                 case 'L': return 0; // Lunes
@@ -179,46 +193,51 @@
                 default: return -1;
             }
         }
-        function fill_grades(userData) {
-            const gradesContainer = document.getElementById('grades');
-
-            const table = document.createElement('table');
-            table.classList.add('grades-table');
-
-            const headerRow = table.insertRow();
-            const headers = ['Materia', 'Parcial 1', 'Parcial 2', 'Parcial 3', 'Final', 'Asistencias'];
-            headers.forEach(headerText => {
-                const header = document.createElement('th');
-                header.textContent = headerText;
-                header.classList.add('cell');
-                header.classList.add('header-cell');
-                headerRow.appendChild(header);
+        function show_group_view(groupID, subject) {
+            group_manager.style.display = "flex";
+            get_group_data(groupID).then(groupData => {
+                fill_group_subject(subject);
+                fill_group_students(groupData)
             });
-
-            userData.forEach(materia => {
-                const row = table.insertRow();
-                const subGrade3 = materia.sub_grade3 !== "-" ? materia.sub_grade3 : "N/A";
-                const finalGrade = materia.final_grade !== "-" ? materia.final_grade : "N/A";
-                const rowData = [
-                    materia.name,
-                    materia.sub_grade1 !== "-" ? materia.sub_grade1 : "N/A",
-                    materia.sub_grade2 !== "-" ? materia.sub_grade2 : "N/A",
-                    subGrade3,
-                    finalGrade,
-                    "N/A" // Placeholder for Asistencias as it's not provided in the data
-                ];
-
-                rowData.forEach(cellData => {
-                    const cell = row.insertCell();
-                    cell.textContent = cellData;
-                    cell.classList.add('cell');
-                });
-            });
-
-            gradesContainer.innerHTML = '';
-            gradesContainer.appendChild(table);
         }
+        function fill_group_subject(data) {
+            document.getElementById('subject-group').querySelector('p').textContent = data.grupo;
+            document.getElementById('subject-name').querySelector('p').textContent = data.name;
+            document.getElementById('subject-hours').querySelector('p').textContent = data.hours;
+            document.getElementById('subject-days').querySelector('p').textContent = data.days;
+            document.getElementById('subject-croom').querySelector('p').textContent = data.croom;
+        }
+        function fill_group_students(students) {
+            const groupStudentsDiv = document.getElementById('group-students');
+            groupStudentsDiv.innerHTML = ''
+            students.forEach(student => {
+                const studentDiv = document.createElement('div');
+                studentDiv.classList.add('student');
 
+                const expedienteDiv = document.createElement('div');
+                expedienteDiv.classList.add('expediente');
+                const expedienteP = document.createElement('p');
+                expedienteP.textContent = student.userID;
+                expedienteDiv.appendChild(expedienteP);
+
+                const nameDiv = document.createElement('div');
+                nameDiv.classList.add('name');
+                const nameP = document.createElement('p');
+                nameP.textContent = student.name;
+                nameDiv.appendChild(nameP);
+
+                const button = document.createElement('button');
+                button.classList.add('grades-btn');
+                button.textContent = 'Revisar Calificaciones';
+                button.addEventListener('click', () => show_user_grades());
+
+                studentDiv.appendChild(expedienteDiv);
+                studentDiv.appendChild(nameDiv);
+                studentDiv.appendChild(button);
+
+                groupStudentsDiv.appendChild(studentDiv);
+            });
+        }
         //Params
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
@@ -249,9 +268,12 @@
                 .catch(error => console.error('Error:', error));
 
         }
-        function get_all_grades() {
-            return fetch(`http://localhost:3000/info/calif/${userID}`, {
-                method: 'GET'
+        function get_group_data(groupID) {
+            return fetch(`http://localhost:3000/teacher/${groupID}`, {
+                method: 'GET',
+                headers: {
+                    'user': userID
+                }
             })
                 .then(response => response.json())
                 .then(data => data.message)
@@ -262,20 +284,6 @@
 
             fill_user_data(data)
         });
-        function get_group_data(groupID) {
-            return fetch(`http://localhost:3000/teacher/${groupID}`, {
-                method: 'GET',
-                headers: {
-                    'user': userID
-                }
-            })
-                .then(response => response.json())
-                .then(data => data)
-                .catch(error => console.error('Error:', error));
-        }
-
-
-
     </script>
 </body>
 

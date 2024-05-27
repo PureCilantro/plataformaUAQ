@@ -51,11 +51,11 @@
   font-size: large;
   border-radius: 0.5ch;
 }
-.button:hover, .group-btn:hover{
+.button:hover, .group-btn:hover, .grades-btn:hover{
   background-color: #04aa6d;
   color: white;
 }
-.button:active .group-btn:active{
+.button:active, .group-btn:active, .grades-btn:active{
   background-color: #04aa6d;
   box-shadow: 0 0.5ch #666;
   transform: translateY(0.2ch);
@@ -95,9 +95,6 @@
   color: white;
   border-radius: 0.5ch;
 }
-#group-manager{
-  display: None;
-}
 .img {
   border-radius: 0.5ch;
 }
@@ -128,3 +125,36 @@
   color: white;
 }
 
+/* Group Manager*/
+#group-manager {
+  display: none;
+  flex-direction: column;
+  overflow: auto;
+
+}
+#subject-headers {
+  display: flex;
+  flex-direction: row;
+  background-color: white;
+  border-radius: 1ch;
+}
+.subject-header{
+  vertical-align: top;
+  margin: 1ch;
+}
+#group-students {
+  display: flex;
+  flex-direction: column;
+}
+
+.student{
+  display: flex;
+  flex-direction: row;
+  margin: 2ch;
+  background-color: white;
+  border-radius: 1ch;
+
+}
+.student> div{
+  margin: 1ch;
+}
