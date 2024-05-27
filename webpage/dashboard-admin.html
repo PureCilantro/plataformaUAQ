@@ -1,12 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>UAQ</title>
+    <link rel="stylesheet" href="dashBoard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jaldi:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <p>admin Dashboard</p>
+
+<body id="body">
+    <div id="sidepanel">
+        <div id="sidepanel-headers">
+            <div id="logo-box">
+                <img class="logo" id="logo1" src="images/logo.png">
+                <img class="logo" id="logo2" src="images/logo.png">
+            </div>
+            <h1>Portal UAQ</h1>
+            <h1>Bienvenido</h1>
+            <h2>¿Qué desea hacer?</h2>
+        </div>
+
+        <div id="sidepanel-content">
+            <button class="button" id="userInfo-btn" onclick="show_info()">Consultar Datos Personales</button>
+            <button class="button" id="schedule-btn" onclick="show_docentes()">Administrar Docentes</button>
+            <button class="button" id="grades-btn" onclick="show_alumnos()">Administrar Alumnos</button>
+            <button class="button" id="logout-btn" onclick="window.location.href = 'login.html'">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="view-container">
+            <div id="user-data" class="view">
+                <div id="user-img"></div>
+                <div id="user-info"></div>
+            </div>
+
+            <div id="admin-docentes" class="view">
+                <p>Here is Docentes manager</p>
+            </div>
+
+            <div id="admin-alumnos" class="view">
+                <div id="alumnos"></div>
+            </div>
+
+            <div id="edit-panel" class="view" style="display: none;">
+                <div id="student-headers">
+                    <div id="sub1" class="subject-header">
+                        <p>Expediente</p>
+                    </div>
+                    <div id="sub2" class="subject-header">
+                        <p>Nombre</p>
+                    </div>
+                    <div id="sub3" class="subject-header">
+                        <p>Semestre</p>
+                    </div>
+                </div>
+                <div id="student-data-manager">
+                    <div id="id_div">
+                        <input id="id_input" type="text" class="subject-header input" disabled>
+                    </div>
+                    <div id="name_div">
+                        <input id="name_input" type="text" class="subject-header input" disabled>
+                    </div>
+                    <div id="semester_div">
+                        <input id="semester_input" type="number" class="subject-header input" disabled>
+                    </div>
+                </div>
+                <button id="edit-Grades" class="button grades-btn" onclick="unlockEditor()">Edit</button>
+                <button id="submit-Grades" class="button grades-btn" onclick="submit_student_changes()">Submit</button>
+            </div>
+            <div id="message-box" class="message-box">
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos que construyen el sitio web
+        const user_data = document.getElementById('user-data');
+        const admin_docentes = document.getElementById('admin-docentes');
+        const admin_alumnos = document.getElementById('admin-alumnos');
+        const edit_panel = document.getElementById('edit-panel');
+        let currentStudent = 0
+
+        // Funciones que construyen el sitio web
+        function show_info() {
+            user_data.style.display = "flex";
+            admin_docentes.style.display = "none";
+            admin_alumnos.style.display = "none";
+            edit_panel.style.display = 'none';
+        }
+
+        function show_docentes() {
+            user_data.style.display = "none";
+            admin_docentes.style.display = "flex";
+            admin_alumnos.style.display = "none";
+            edit_panel.style.display = 'none';
+        }
+
+        function show_alumnos() {
+            user_data.style.display = "none";
+            admin_docentes.style.display = "none";
+            admin_alumnos.style.display = "inline-block";
+            edit_panel.style.display = 'none';
+            get_all_students().then(data => {
+                fill_students(data)
+            });
+        }
+
+        function show_student_editor(studentId) {
+            edit_panel.style.display = 'flex';
+            currentStudent = studentId
+            get_student_data(studentId).then(data => {
+                console.log(data[0].semester)
+                document.getElementById('id_input').value = data[0].userID;
+                document.getElementById('name_input').value = data[0].name;
+                document.getElementById('semester_input').value = data[0].semester;
+            });
+        }
+        function unlockEditor() {
+            var inputs = document.querySelectorAll(".input");
+            inputs.forEach(input => {
+                input.disabled = false;
+            })
+
+        }
+        function submit_student_changes() {
+            message = document.getElementById('message-box')
+
+            student_data =
+            {
+                userID: document.getElementById('id_input').value,
+                name: document.getElementById('name_input').value,
+                semester: document.getElementById('semester_input').value
+            };
+            put_student_data(student_data).then(response => {
+                message.innerHTML = `<p>${response}</p>`
+            })
+
+        }
+
+        function fill_user_data(userData) {
+            const userInfo = document.getElementById('user-info');
+            userInfo.innerHTML = `
+                <p><strong>Nombre:</strong> ${userData.name}</p>
+                <p><strong>Expediente:</strong> ${userID}</p>
+            `;
+        }
+
+        function fill_students(groupData) {
+            const groupStudentsDiv = document.getElementById('alumnos');
+            groupStudentsDiv.innerHTML = '';
+
+            groupData.forEach(student => {
+                const studentDiv = document.createElement('div');
+                studentDiv.classList.add('student');
+
+                const expedienteDiv = document.createElement('div');
+                expedienteDiv.classList.add('expediente');
+                const expedienteP = document.createElement('p');
+                expedienteP.textContent = student.userID;
+                expedienteDiv.appendChild(expedienteP);
+
+                const nameDiv = document.createElement('div');
+                nameDiv.classList.add('name');
+                const nameP = document.createElement('p');
+                nameP.textContent = student.name;
+                nameDiv.appendChild(nameP);
+
+                const button = document.createElement('button');
+                button.classList.add('grades-btn');
+                button.textContent = 'Modificar Datos';
+                button.addEventListener('click', () => show_student_editor(student.userID));
+
+                studentDiv.appendChild(expedienteDiv);
+                studentDiv.appendChild(nameDiv);
+                studentDiv.appendChild(button);
+
+                groupStudentsDiv.appendChild(studentDiv);
+            });
+        }
+
+        // Parámetros
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const userID = urlParams.get('userID');
+
+        // Endpoints
+        function get_user_data() {
+            return fetch('http://localhost:3000/info', {
+                method: 'GET',
+                headers: { 'user': userID }
+            })
+                .then(response => response.json())
+                .then(data => data.message[0])
+                .catch(error => console.error('Error:', error));
+        }
+
+        function get_all_students() {
+            return fetch('http://localhost:3000/admin/student', {
+                method: 'GET',
+                headers: { 'user': userID }
+            })
+                .then(response => response.json())
+                .then(data => data.message)
+                .catch(error => console.error('Error:', error));
+        }
+
+        function get_student_data(studentId) {
+            return fetch(`http://localhost:3000/admin/student/${studentId}`, {
+                method: 'GET',
+                headers: { 'user': userID }
+            })
+                .then(response => response.json())
+                .then(data => data.message)
+                .catch(error => console.error('Error:', error));
+        }
+
+        function put_student_data(student_data) {
+            return fetch('http://localhost:3000/admin/student', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'user': userID
+                },
+                body: JSON.stringify(student_data),
+            })
+                .then(response => response.json())
+                .then(data => data)
+                .catch(error => console.error('Error:', error));
+        }
+
+        get_user_data().then(data => fill_user_data(data));
+    </script>
 </body>
 
 </html>

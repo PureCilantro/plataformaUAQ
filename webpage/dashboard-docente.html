@@ -317,7 +317,6 @@
         }
 
         function fill_user_grades(data) {
-            // Iterate over each student's data
             data.forEach(function (studentData) {
                 if (studentData.hasOwnProperty('sub1')) {
                     document.getElementById('sub1_div').getElementsByTagName('input')[0].value = studentData['sub1'];

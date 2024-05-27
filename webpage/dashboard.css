@@ -140,7 +140,7 @@
   width: 100ch;
 
 }
-#subject-headers, #student-headers, #student-grades {
+#subject-headers, #student-headers, #student-grades ,#student-data-manager{
   display: flex;
   flex-direction: row;
   background-color: white;
@@ -180,4 +180,12 @@
 }
 .message-box{
   background-color: white;
+}
+
+/*Admin DashBoard*/
+#admin-docentes, #admin-alumnos{
+  display: none;
+}
+#edit-panel{
+  display: none;
 }
