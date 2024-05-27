@@ -20,25 +20,18 @@
             </div>
             <h1>Portal UAQ</h1>
             <h1>Bienvenido</h1>
-            <h2>¿Que desea hacer?</h2>
+            <h2>¿Qué desea hacer?</h2>
         </div>
 
         <div id="sidepanel-content">
-            <button class="button" id="userInfo-btn" onclick="show_info()">Consultar Datos
-                personales</button>
-            <button class="button" id="schedule-btn" onclick="show_schedule()">Consultar
-                Horarios y Grupos</button>
-
-            <button class="button" id="logout-btn" onclick="window.location.href = 'login.html'">Cerrar Sesion
-            </button>
-
+            <button class="button" id="userInfo-btn" onclick="show_info()">Consultar Datos Personales</button>
+            <button class="button" id="schedule-btn" onclick="show_schedule()">Consultar Horarios y Grupos</button>
+            <button class="button" id="logout-btn" onclick="window.location.href = 'login.html'">Cerrar Sesión</button>
         </div>
-
     </div>
 
     <div id="content">
         <div id="view-container">
-
             <div id="user-data" class="view">
                 <div id="user-img"></div>
                 <div id="user-info"></div>
@@ -56,6 +49,7 @@
                     </tr>
                 </table>
             </div>
+
             <div id="group-manager" class="view">
                 <div id="subject-headers">
                     <div id="subject-group" class="subject-header">
@@ -82,62 +76,133 @@
                         <div class="name">
                             <p></p>
                         </div>
-                        <button class="grades-btn">
-                            Revisar Calificaciones
-                        </button>
+                        <button class="grades-btn">Revisar Calificaciones</button>
                     </div>
                 </div>
             </div>
+
             <div id="grades" class="view">
-
+                <div id="student-headers">
+                    <div id="sub1" class="subject-header">
+                        <p>Parcial 1</p>
+                    </div>
+                    <div id="sub2" class="subject-header">
+                        <p>Parcial 2</p>
+                    </div>
+                    <div id="sub3" class="subject-header">
+                        <p>Parcial 3</p>
+                    </div>
+                    <div id="final" class="subject-header">
+                        <p>Final</p>
+                    </div>
+                </div>
+                <div id="student-grades">
+                    <div id="sub1_div">
+                        <input id="sub1_input" type="number" class="subject-header input" disabled>
+                    </div>
+                    <div id="sub2_div">
+                        <input id="sub2_input" type="number" class="subject-header input" disabled>
+                    </div>
+                    <div id="sub3_div">
+                        <input id="sub3_input" type="number" class="subject-header input" disabled>
+                    </div>
+                    <div id="final_div">
+                        <input id="final_input" type="number" class="subject-header input" disabled>
+                    </div>
+                </div>
+                <div id="grade_buttons">
+                    <button id="edit-Grades" class="button grades-btn" onclick="unlockEditor()">
+                        Edit
+                    </button>
+                    <button id="submit-Grades" class="button grades-btn" onclick="submit_grades()">
+                        Submit
+                    </button>
+                </div>
+                <div id="message-box" class="message-box">
+                    <p></p>
+                </div>
             </div>
-
         </div>
-
     </div>
+
     <script>
-        //Elements that construct the website
+        // Elementos que construyen el sitio web
         const user_data = document.getElementById('user-data');
         const schedule = document.getElementById('schedule');
-        const group_manager = document.getElementById('group-manager')
+        const group_manager = document.getElementById('group-manager');
+        const grades = document.getElementById('grades');
+        currentUser = 0
+        currentSubject = 0
 
-        //Functions that build the website
-        function show_user_grades() {
-            console.log('hello world')
+
+
+        // Funciones que construyen el sitio web
+        function submit_grades(){
+            sub1 = document.getElementById('sub1_input')
+            sub2 = document.getElementById('sub2_input')
+            sub3 = document.getElementById('sub3_input')
+            final = document.getElementById('final_input')
+            message = document.getElementById('message-box')
+            let new_grades = {
+                sub1: sub1.value,
+                sub2: sub2.value,
+                sub3: sub3.value,
+                final: final.value,
+                exp: currentUser, 
+                subject: currentSubject
+            };
+            put_new_grades(new_grades).then(response =>{
+                message.innerHTML = `<p>${response.message}</p>`
+            })
+            
+        }
+
+        function show_user_grades(student_id, subject_id) {
+            grades.style.display = 'flex'
+            get_subject_grades(student_id, subject_id).then(data => {
+                fill_user_grades(data)
+            });
+            currentUser = student_id
+            currentSubject = subject_id = subject_id
         }
 
         function show_info() {
             user_data.style.display = "flex";
-            schedule.style.display = "None";
-            group_manager.style.display = "None";
+            schedule.style.display = "none";
+            group_manager.style.display = "none";
+            grades.style.display = 'none';
 
             get_user_data().then(data => {
-                console.log(data)
-                fill_user_data(data)
-
+                fill_user_data(data);
             });
-
         }
+
         function show_schedule() {
-            user_data.style.display = "None";
+            user_data.style.display = "none";
             schedule.style.display = "flex";
-            group_manager.style.display = "None";
+            group_manager.style.display = "none";
+            grades.style.display = 'none';
 
             get_user_schedule().then(data => {
-                console.log(data)
-                fill_schedule(data)
-
+                fill_schedule(data);
             });
+        }
 
+        function unlockEditor(){
+            var inputs = document.querySelectorAll(".input");
+            inputs.forEach(input => {
+                input.disabled = false;
+            })
+            
         }
 
         function fill_user_data(userData) {
             const imgContainer = document.getElementById('user-img');
             const userInfo = document.getElementById('user-info');
             userInfo.innerHTML = `
-            <p><strong>Nombre:</strong> ${userData.name}</p>
-            <p><strong>Expediente:</strong> ${userID}</p>
-        `;
+                <p><strong>Nombre:</strong> ${userData.name}</p>
+                <p><strong>Expediente:</strong> ${userID}</p>
+            `;
         }
 
         function fill_schedule(data) {
@@ -170,11 +235,9 @@
                             const cell = timetable.rows[rowIndex].cells[dayIndex + 1];
 
                             let groupRequest = document.createElement('button');
-                            groupRequest.classList.add('group-btn')
+                            groupRequest.classList.add('group-btn');
                             groupRequest.textContent = `${subject.name}\n${subject.croom}\n${subject.grupo}`;
                             groupRequest.classList.add('filled-cell');
-
-                            // Utilize an arrow function to pass the parameter correctly
                             groupRequest.addEventListener('click', () => show_group_view(subject.grupo, subject));
 
                             cell.appendChild(groupRequest);
@@ -183,6 +246,7 @@
                 }
             });
         }
+
         function getDayIndex(day) {
             switch (day) {
                 case 'L': return 0; // Lunes
@@ -193,24 +257,36 @@
                 default: return -1;
             }
         }
+
         function show_group_view(groupID, subject) {
             group_manager.style.display = "flex";
             get_group_data(groupID).then(groupData => {
                 fill_group_subject(subject);
-                fill_group_students(groupData)
+                fill_group_students(groupData, subject);
             });
         }
+
         function fill_group_subject(data) {
+            if (data === null) {
+                document.getElementById('subject-group').querySelector('p').textContent = null;
+                document.getElementById('subject-name').querySelector('p').textContent = null;
+                document.getElementById('subject-hours').querySelector('p').textContent = null;
+                document.getElementById('subject-days').querySelector('p').textContent = null;
+                document.getElementById('subject-croom').querySelector('p').textContent = null;
+
+            }
+
             document.getElementById('subject-group').querySelector('p').textContent = data.grupo;
             document.getElementById('subject-name').querySelector('p').textContent = data.name;
             document.getElementById('subject-hours').querySelector('p').textContent = data.hours;
             document.getElementById('subject-days').querySelector('p').textContent = data.days;
             document.getElementById('subject-croom').querySelector('p').textContent = data.croom;
         }
-        function fill_group_students(students) {
+
+        function fill_group_students(groupData, subject_data) {
             const groupStudentsDiv = document.getElementById('group-students');
-            groupStudentsDiv.innerHTML = ''
-            students.forEach(student => {
+            groupStudentsDiv.innerHTML = '';
+            groupData.forEach(student => {
                 const studentDiv = document.createElement('div');
                 studentDiv.classList.add('student');
 
@@ -229,7 +305,8 @@
                 const button = document.createElement('button');
                 button.classList.add('grades-btn');
                 button.textContent = 'Revisar Calificaciones';
-                button.addEventListener('click', () => show_user_grades());
+                button.addEventListener('click', () => show_user_grades(student.userID, subject_data.subjectID));
+                
 
                 studentDiv.appendChild(expedienteDiv);
                 studentDiv.appendChild(nameDiv);
@@ -238,7 +315,26 @@
                 groupStudentsDiv.appendChild(studentDiv);
             });
         }
-        //Params
+
+        function fill_user_grades(data) {
+            // Iterate over each student's data
+            data.forEach(function (studentData) {
+                if (studentData.hasOwnProperty('sub1')) {
+                    document.getElementById('sub1_div').getElementsByTagName('input')[0].value = studentData['sub1'];
+                }
+                if (studentData.hasOwnProperty('sub2')) {
+                    document.getElementById('sub2_div').getElementsByTagName('input')[0].value = studentData['sub2'];
+                }
+                if (studentData.hasOwnProperty('sub3')) {
+                    document.getElementById('sub3_div').getElementsByTagName('input')[0].value = studentData['sub3'];
+                }
+                if (studentData.hasOwnProperty('final')) {
+                    document.getElementById('final_div').getElementsByTagName('input')[0].value = studentData['final'];
+                }
+            });
+        }
+
+        // Endpoints
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         userID = urlParams.get('userID');
@@ -246,44 +342,60 @@
         function get_user_data() {
             return fetch('http://localhost:3000/info', {
                 method: 'GET',
-                headers: {
-                    'user': userID
-                }
+                headers: { 'user': userID }
             })
                 .then(response => response.json())
-                .then(data =>
-                    data.message[0]
-                )
+                .then(data => data.message[0])
                 .catch(error => console.error('Error:', error));
         }
+
         function get_user_schedule() {
             return fetch('http://localhost:3000/teacher/', {
                 method: 'GET',
-                headers: {
-                    'user': userID
-                }
+                headers: { 'user': userID }
             })
                 .then(response => response.json())
                 .then(data => data)
                 .catch(error => console.error('Error:', error));
-
         }
+
         function get_group_data(groupID) {
             return fetch(`http://localhost:3000/teacher/${groupID}`, {
                 method: 'GET',
-                headers: {
-                    'user': userID
-                }
+                headers: { 'user': userID }
             })
                 .then(response => response.json())
                 .then(data => data.message)
                 .catch(error => console.error('Error:', error));
         }
 
-        get_user_data().then(data => {
+        function get_subject_grades(studentId, subjectId) {
+            return fetch(`http://localhost:3000/info/calif/${studentId}/${subjectId}`, {
+                method: 'GET',
+                headers: { 'user': userID }
+            })
+                .then(response => response.json())
+                .then(data => data.message)
+                .catch(error => console.error('Error', error));
+        }
 
-            fill_user_data(data)
-        });
+        function put_new_grades(new_grades){
+            
+            return fetch('http://localhost:3000/teacher/', {
+                method: 'PUT',
+                headers: {
+                    'user': userID,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(new_grades)
+            })
+            .then(response => response.json())
+            .then(data => data)
+            .catch(error => console.error('Error:', error));
+        }
+
+
+        get_user_data().then(data => fill_user_data(data));
     </script>
 </body>
 

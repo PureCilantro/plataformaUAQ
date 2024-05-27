@@ -20,26 +20,19 @@
             </div>
             <h1>Portal UAQ</h1>
             <h1>Bienvenido</h1>
-            <h2>¿Que desea hacer?</h2>
+            <h2>¿Qué desea hacer?</h2>
         </div>
 
         <div id="sidepanel-content">
-            <button class="button" id="userInfo-btn" onclick="show_info()">Consultar Datos
-                personales</button>
-            <button class="button" id="schedule-btn" onclick="show_schedule()">Consultar
-                Horario</button>
-            <button class="button" id="grades-btn" onclick="show_grades()">Consultar
-                Calificaciones</button>
-            <button class="button" id="logout-btn" onclick="window.location.href = 'login.html'">Cerrar Sesion
-            </button>
-
+            <button class="button" id="userInfo-btn" onclick="show_info()">Consultar Datos Personales</button>
+            <button class="button" id="schedule-btn" onclick="show_schedule()">Consultar Horario</button>
+            <button class="button" id="grades-btn" onclick="show_grades()">Consultar Calificaciones</button>
+            <button class="button" id="logout-btn" onclick="window.location.href = 'login.html'">Cerrar Sesión</button>
         </div>
-
     </div>
 
     <div id="content">
         <div id="view-container">
-
             <div id="user-data" class="view">
                 <div id="user-img"></div>
                 <div id="user-info"></div>
@@ -58,63 +51,54 @@
                 </table>
             </div>
 
-            <div id="grades" class="view">
-            </div>
-
+            <div id="grades" class="view"></div>
         </div>
-
     </div>
+
     <script>
-        //Elements that construct the website
+        // Elementos que construyen el sitio web
         const user_data = document.getElementById('user-data');
         const schedule = document.getElementById('schedule');
-        const grades = document.getElementById('grades')
+        const grades = document.getElementById('grades');
 
-        //Functions that build the website
+        // Funciones que construyen el sitio web
         function show_info() {
             user_data.style.display = "flex";
-            schedule.style.display = "None";
-            grades.style.display = "None";
+            schedule.style.display = "none";
+            grades.style.display = "none";
 
-            get_user_data().then(data => {
-                fill_user_data(data)
-            });
-
+            get_user_data().then(data => fill_user_data(data));
         }
+
         function show_schedule() {
-            user_data.style.display = "None";
+            user_data.style.display = "none";
             schedule.style.display = "flex";
-            grades.style.display = "None";
+            grades.style.display = "none";
 
-            get_user_schedule().then(data => {
-                fill_schedule(data)
-            });
-
+            get_user_schedule().then(data => fill_schedule(data));
         }
+
         function show_grades() {
-            user_data.style.display = "None";
-            schedule.style.display = "None";
+            user_data.style.display = "none";
+            schedule.style.display = "none";
             grades.style.display = "inline-block";
 
-            get_all_grades().then(data => {
-                fill_grades(data)
-            })
-
+            get_all_grades().then(data => fill_grades(data));
         }
 
         function fill_user_data(userData) {
-            const imgContainer = document.getElementById('user-img');
             const userInfo = document.getElementById('user-info');
             userInfo.innerHTML = `
-            <p><strong>Nombre:</strong> ${userData.name}</p>
-            <p><strong>Expediente:</strong> ${userID}</p>
-            <p><strong>Semestre Actual:</strong> ${userData.semester}</p>
-            <p><strong>Créditos Obtenidos:</strong> ${userData.credits}/441</p>
-        `;
+                <p><strong>Nombre:</strong> ${userData.name}</p>
+                <p><strong>Expediente:</strong> ${userID}</p>
+                <p><strong>Semestre Actual:</strong> ${userData.semester}</p>
+                <p><strong>Créditos Obtenidos:</strong> ${userData.credits}/441</p>
+            `;
         }
+
         function fill_schedule(scheduleData) {
             const timetable = document.getElementById('timetable');
-            timetable.innerHTML = ''
+            timetable.innerHTML = '';
 
             for (let i = 7; i <= 17; i++) {
                 const row = timetable.insertRow();
@@ -146,6 +130,7 @@
                 }
             });
         }
+
         function getDayIndex(day) {
             switch (day) {
                 case 'L': return 0; // Lunes
@@ -156,6 +141,7 @@
                 default: return -1;
             }
         }
+
         function fill_grades(userData) {
             const gradesContainer = document.getElementById('grades');
 
@@ -167,8 +153,7 @@
             headers.forEach(headerText => {
                 const header = document.createElement('th');
                 header.textContent = headerText;
-                header.classList.add('cell');
-                header.classList.add('header-cell');
+                header.classList.add('cell', 'header-cell');
                 headerRow.appendChild(header);
             });
 
@@ -195,43 +180,42 @@
             gradesContainer.innerHTML = '';
             gradesContainer.appendChild(table);
         }
-        //Params
+
+        // Parámetros
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        userID = urlParams.get('userID');
-        //get functions for the student
+        const userID = urlParams.get('userID');
+
+        // Endpoints
         function get_user_data() {
             return fetch('http://localhost:3000/info', {
                 method: 'GET',
-                headers: {
-                    'user': userID
-                }
+                headers: { 'user': userID }
             })
-                .then(response => response.json())
-                .then(data => data.message[0])
-                .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(data => data.message[0])
+            .catch(error => console.error('Error:', error));
         }
+
         function get_user_schedule() {
             return fetch(`http://localhost:3000/info/horario/${userID}`, {
                 method: 'GET'
             })
-                .then(response => response.json())
-                .then(data => data.message)
-                .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(data => data.message)
+            .catch(error => console.error('Error:', error));
         }
+
         function get_all_grades() {
             return fetch(`http://localhost:3000/info/calif/${userID}`, {
                 method: 'GET'
             })
-                .then(response => response.json())
-                .then(data => data.message)
-                .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(data => data.message)
+            .catch(error => console.error('Error:', error));
         }
-        get_user_data().then(data => {
-            fill_user_data(data)
-        });
 
-
+        get_user_data().then(data => fill_user_data(data));
     </script>
 </body>
 

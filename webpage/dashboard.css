@@ -69,10 +69,7 @@
   background-color: white;
   flex-grow: 1;
 }
-#user-data,
-#schedule,
-#grades ,
-#group-manager{
+.view{
   overflow: auto;
   display: flex;
   flex-direction: column;
@@ -87,8 +84,10 @@
   display: None;
 }
 #grades {
-  display: None;
+  display: none;
   overflow: auto;
+  height: 30ch;
+  width: 100ch;
 }
 #user-info {
   font-size: 5ch;
@@ -97,6 +96,11 @@
 }
 .img {
   border-radius: 0.5ch;
+}
+.grades-btn {
+  padding: 1ch;
+  border-radius: 1ch;
+  margin: 1ch;
 }
 
 /* Schedule */
@@ -130,31 +134,50 @@
   display: none;
   flex-direction: column;
   overflow: auto;
+  justify-content: space-around;
+  align-content: flex-start;
+  height: 50ch;
+  width: 100ch;
 
 }
-#subject-headers {
+#subject-headers, #student-headers, #student-grades {
   display: flex;
   flex-direction: row;
   background-color: white;
   border-radius: 1ch;
+  width: 95%;
+  justify-content: space-between;
+  margin: 1ch;
 }
 .subject-header{
   vertical-align: top;
   margin: 1ch;
+  width: 95%;
+  justify-content: space-between;
+
 }
 #group-students {
   display: flex;
   flex-direction: column;
+  width: 95%;
+  margin: 1ch;
+  justify-content: space-between;
+  overflow: auto;
+
 }
 
 .student{
   display: flex;
   flex-direction: row;
   margin: 2ch;
+  padding: 1ch;
   background-color: white;
   border-radius: 1ch;
-
 }
 .student> div{
   margin: 1ch;
+  
+}
+.message-box{
+  background-color: white;
 }
